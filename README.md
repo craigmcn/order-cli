@@ -20,7 +20,7 @@ Usage
 Options
 -------
 
-|  |  |  |
+| Option | Description | Type |
 |---|---|---|
 |`--debug`             | Output debug information    | [`boolean`] |
 |`-p, --prefix `       | Output prefix               | [`string`] [_default:_ "Speaking order: "] |
