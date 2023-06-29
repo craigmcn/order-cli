@@ -41,6 +41,12 @@ y.option('oc', {
   describe: 'Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the last separator to the second-to-last item)',
   type: 'boolean'
 })
+y.option('cc', {
+  alias: 'clipboard',
+  describe: 'Copy the output to the clipboard (to disable: --no-cc, --no-clipboard))',
+  default: true,
+  type: 'boolean'
+})
 
 const argv = y.parse(hideBin(process.argv))
 if (argv.debug) console.log(argv)
@@ -56,8 +62,14 @@ if (argv._.length > 16) {
   process.exit(1)
 }
 
-const result = joinAnd(shuffle(argv._), {separator: argv.s[0], lastSeparator: argv.s[1], oxfordComma: argv.oc})
-const toClipboard = argv.p + result
-clipboard.writeSync(toClipboard);
+const shuffled = shuffle(argv._)
+const joined = joinAnd(shuffled, {separator: argv.s[0], lastSeparator: argv.s[1], oxfordComma: argv.oc})
+const result = argv.p + joined
 
-console.log(`${chalk.greenBright('Copied to clipboard:')} ${chalk.white(`${toClipboard}`)}`)
+let copied = ''
+if (argv.cc) {
+  clipboard.writeSync(result);
+  copied = chalk.greenBright('Copied to clipboard: ')
+}
+
+console.log(`${copied}${chalk.white(`${result}`)}`)
