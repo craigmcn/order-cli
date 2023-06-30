@@ -1,6 +1,6 @@
 {
   "name": "speaking-order-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Generate random order of names for meeting speaking order",
   "author": "Craig McNaughton",
   "license": "GPL-3.0-or-later",
@@ -9,7 +9,6 @@
     "order": "bin/index.js"
   },
   "dependencies": {
-    "chalk": "^5.2.0",
     "clipboardy": "^3.0.0",
     "yargs": "^17.7.2"
   }

@@ -2,20 +2,20 @@
 import yargs from 'yargs/yargs'
 import { hideBin } from 'yargs/helpers'
 import clipboard from 'clipboardy'
-import chalk from 'chalk';
 import { shuffle } from '../lib/shuffle.js';
 import { joinAnd } from '../lib/joinAnd.js';
+import { green, red, white } from '../lib/colors.js';
 
 const y = yargs()
 y.usage('Usage:  $0 [options] [--] <participants...>')
 y.usage('')
 y.usage(`Examples:`)
-y.usage(`$0 ${chalk.greenBright('Alice Bob Charlie')}`)
-y.usage(`> ${chalk.white('Speaking order: Bob, Charlie then Alice')}`)
-y.usage(`$0 -p "Here's the order: " ${chalk.greenBright('Alice Bob Charlie')}`)
-y.usage(`> ${chalk.white('Here\'s the order: Charlie, Bob then Alice')}`)
-y.usage(`$0 -s ";" "and" --oc -- ${chalk.greenBright('Alice Bob Charlie')}`)
-y.usage(`> ${chalk.white('Speaking order: Alice; Charlie; and Bob')}`)
+y.usage(`$0 ${green('Alice Bob Charlie')}`)
+y.usage(`> ${white('Speaking order: Bob, Charlie then Alice')}`)
+y.usage(`$0 -p "Here's the order: " ${green('Alice Bob Charlie')}`)
+y.usage(`> ${white('Here\'s the order: Charlie, Bob then Alice')}`)
+y.usage(`$0 -s ";" "and" --oc -- ${green('Alice Bob Charlie')}`)
+y.usage(`> ${white('Speaking order: Alice; Charlie; and Bob')}`)
 
 y.alias('h', 'help')
 y.alias('v', 'version')
@@ -52,13 +52,13 @@ const argv = y.parse(hideBin(process.argv))
 if (argv.debug) console.log(argv)
 
 if (argv._.length === 0) {
-  console.error(chalk.redBright('No participants provided'))
+  console.error(red('No participants provided'))
   process.exit(1)
 }
 
 if (argv._.length > 16) {
   // This is just a random number I picked
-  console.error(chalk.redBright('Maximum participants (16) exceeded'))
+  console.error(red('Maximum participants (16) exceeded'))
   process.exit(1)
 }
 
@@ -69,7 +69,7 @@ const result = argv.p + joined
 let copied = ''
 if (argv.cc) {
   clipboard.writeSync(result);
-  copied = chalk.greenBright('Copied to clipboard: ')
+  copied = green('Copied to clipboard: ')
 }
 
-console.log(`${copied}${chalk.white(`${result}`)}`)
+console.log(`${copied}${white(`${result}`)}`)
