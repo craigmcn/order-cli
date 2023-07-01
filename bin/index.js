@@ -4,18 +4,25 @@ import { hideBin } from 'yargs/helpers'
 import clipboard from 'clipboardy'
 import { shuffle } from '../lib/shuffle.js';
 import { joinAnd } from '../lib/joinAnd.js';
-import { green, red, white } from '../lib/colors.js';
+import { green, red, white, yellow } from '../lib/colors.js';
+
+const PREFIX = 'Speaking order: ';
+const COPIED = 'Copied to clipboard: ';
+const NO_PARTICIPANTS_MSG = 'No participants provided';
+const MAX_PARTICIPANTS = 16; // This is just a random number I picked
+const MAX_PARTICIPANTS_MSG = `Maximum participants (${MAX_PARTICIPANTS}) exceeded`;
+const DEBUGGING_INFO = 'Debugging info:';
 
 const y = yargs()
 y.usage('Usage:  $0 [options] [--] <participants...>')
 y.usage('')
 y.usage(`Examples:`)
 y.usage(`$0 ${green('Alice Bob Charlie')}`)
-y.usage(`> ${white('Speaking order: Bob, Charlie then Alice')}`)
+y.usage(`> ${white(`${PREFIX}Bob, Charlie then Alice`)}`)
 y.usage(`$0 -p "Here's the order: " ${green('Alice Bob Charlie')}`)
 y.usage(`> ${white('Here\'s the order: Charlie, Bob then Alice')}`)
 y.usage(`$0 -s ";" "and" --oc -- ${green('Alice Bob Charlie')}`)
-y.usage(`> ${white('Speaking order: Alice; Charlie; and Bob')}`)
+y.usage(`> ${white(`${PREFIX}Alice; Charlie; and Bob`)}`)
 
 y.alias('h', 'help')
 y.alias('v', 'version')
@@ -27,7 +34,7 @@ y.option('debug', {
 y.option('p', {
   alias: 'prefix',
   describe: 'Output prefix',
-  default: 'Speaking order: ',
+  default: PREFIX,
   type: 'string'
 })
 y.option('s', {
@@ -38,7 +45,7 @@ y.option('s', {
 })
 y.option('oc', {
   alias: 'oxford-comma',
-  describe: 'Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the last separator to the second-to-last item)',
+  describe: 'Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the separator to the second-to-last item)',
   type: 'boolean'
 })
 y.option('cc', {
@@ -47,18 +54,30 @@ y.option('cc', {
   default: true,
   type: 'boolean'
 })
+y.option('clr', {
+  alias: 'colors',
+  describe: 'Colorize the output (to disable: --no-clr, --no-colors)',
+  default: true,
+  type: 'boolean'
+})
 
 const argv = y.parse(hideBin(process.argv))
-if (argv.debug) console.log(argv)
-
-if (argv._.length === 0) {
-  console.error(red('No participants provided'))
-  process.exit(1)
+if (argv.debug) {
+  console.log(argv.clr ? yellow(DEBUGGING_INFO) : DEBUGGING_INFO)
+  console.log(argv)
 }
 
-if (argv._.length > 16) {
-  // This is just a random number I picked
-  console.error(red('Maximum participants (16) exceeded'))
+let error;
+if (argv._.length === 0) {
+  error = argv.clr ? red(NO_PARTICIPANTS_MSG) : NO_PARTICIPANTS_MSG
+}
+
+if (argv._.length > MAX_PARTICIPANTS) {
+  error = argv.clr ? red(MAX_PARTICIPANTS_MSG) : MAX_PARTICIPANTS_MSG
+}
+
+if (error) {
+  console.error(error)
   process.exit(1)
 }
 
@@ -69,7 +88,8 @@ const result = argv.p + joined
 let copied = ''
 if (argv.cc) {
   clipboard.writeSync(result);
-  copied = green('Copied to clipboard: ')
+  copied = argv.clr ? green(COPIED) : COPIED
 }
 
-console.log(`${copied}${white(`${result}`)}`)
+const output = argv.clr ? white(result) : result
+console.log(`${copied}${output}`)
