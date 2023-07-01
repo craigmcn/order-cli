@@ -1,6 +1,6 @@
 {
   "name": "speaking-order-cli",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Generate random order of names for meeting speaking order",
   "author": "Craig McNaughton",
   "license": "GPL-3.0-or-later",

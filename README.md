@@ -25,8 +25,9 @@ Options
 |`--debug`             | Output debug information    | [`boolean`] |
 |`-p, --prefix `       | Output prefix               | [`string`] [_default:_ "Speaking order: "] |
 |`-s, --separators`    | Output list separators (i.e., [separator, lastSeparator]) | [`array`] [_default:_ [",", "then"]] |
-|`--oc, --oxford-comma`| Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the last separator to the second-to-last item) | [`boolean`] |
-| `--cc, --clipboard`  | Copy the output to the clipboard (to disable: --no-cc, --no-clipboard) | [`boolean`] [_default_: true] |
+|`--oc, --oxford-comma`| Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the separator to the second-to-last item) | [`boolean`] |
+| `--cc, --clipboard`  | Copy the output to the clipboard (to disable: `--no-cc`, `--no-clipboard`) | [`boolean`] [_default_: true] |
+| `--clr, --colors`    | Colorize the output (to disable: `--no-clr`, `--no-colors`) | [`boolean`] [_default_: true] |
 |`-h, --help`          | Show help                   | [`boolean`] |
 |`-v, --version `      | Show version number         | [`boolean`] |
 
