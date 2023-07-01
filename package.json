@@ -8,8 +8,14 @@
   "bin": {
     "order": "bin/index.js"
   },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
   "dependencies": {
     "clipboardy": "^3.0.0",
     "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
