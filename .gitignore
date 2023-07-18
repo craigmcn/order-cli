@@ -1,5 +1,11 @@
+# Personal IDE settings
 .vscode
 
+# Project dependencies
 node_modules
 
+# Test coverage reports
+coverage
+
+# Miscellaneous
 _notes.md

@@ -1,0 +1,10 @@
+{
+  "all": true,
+  "reporter": [
+    "html",
+    "text"
+  ],
+  "lines": 100,
+  "branches": 100,
+  "statements": 100
+}
