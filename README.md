@@ -1,6 +1,8 @@
 Order CLI
 =========
 
+![nycrc config on GitHub](https://img.shields.io/nycrc/craigmcn/order-cli)
+
 A small command line utility to shuffle a list of names for a meeting round-table speaking order.
 
 Provided a list of names, the list will be shuffled in a random order and copied to the clipboard.
