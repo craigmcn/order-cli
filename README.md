@@ -10,13 +10,19 @@ Provided a list of names, the list will be shuffled in a random order and copied
 Requirements
 ------------
 
-Node >= 14.18.1
+Node >= 16
 
 Usage
 -----
 
 ```console
-> npx order [options] [--] <participants...>
+> npx speaking-order-cli [options] [--] <participants...>
+```
+**Or**
+
+```console
+> npm install -g speaking-order-cli
+> order [options] [--] <participants...>
 ```
 
 Options
