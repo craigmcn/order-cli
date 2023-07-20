@@ -1,12 +1,17 @@
 {
   "name": "speaking-order-cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Generate random order of names for meeting speaking order",
   "author": "Craig McNaughton",
   "license": "GPL-3.0-or-later",
   "type": "module",
+  "engines": {
+    "node": ">=16.0.0",
+    "yarn": ">=1.22.0"
+  },
   "bin": {
-    "order": "bin/index.js"
+    "order": "bin/index.js",
+    "speaking-order-cli": "bin/index.js"
   },
   "scripts": {
     "test": "c8 mocha",
@@ -31,5 +36,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/craigmcn/order-cli.git"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }
