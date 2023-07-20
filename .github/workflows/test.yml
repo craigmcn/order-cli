@@ -17,13 +17,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - if: matrix.os == 'ubuntu-latest'
-        name: Install xsel
-        run: sudo apt install xsel
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: yarn test
+
+      - if: matrix.os == 'ubuntu-latest'
+        run: xvfb-run yarn test
+      - if: matrix.os == 'macos-latest' || matrix.os == 'windows-latest'
+        run: yarn test
