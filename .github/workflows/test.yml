@@ -8,11 +8,12 @@ on:
 
 jobs:
   build:
+
+    runs-on: macos-latest
+
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        node-version: [16.x, 18.x, 20.x]
-    runs-on: ${{ matrix.os }}
+        node-version: [14.x, 16.x, 18.x, 20.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +22,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - name: Run headless test
-        uses: coactions/setup-xvfb@v1
       - run: yarn test
