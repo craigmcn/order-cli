@@ -11,12 +11,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         node-version: [16.x, 18.x, 20.x]
 
     runs-on: ${{ matrix.os }}
 
     steps:
+      - if: matrix.os == 'ubuntu-latest'
+        name: Install xsel
+        run: sudo apt install xsel
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
