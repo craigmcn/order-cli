@@ -16,11 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Run headless test
-        uses: coactions/setup-xvfb@v1
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
       - run: yarn test
