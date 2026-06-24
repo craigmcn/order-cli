@@ -1,15 +1,3 @@
-import { PREFIX } from '../lib/constants.js';
-
-export const DEFAULT_ARGV = {
-  _: [],
-  'cc': true,
-  'clr': true,
-  'debug': false,
-  'oc': false,
-  'p': PREFIX,
-  's': [',', 'then'],
-};
-
 export const PARTICIPANTS = [
   'Alice',
   'Bob',
@@ -30,7 +18,21 @@ export const PARTICIPANTS = [
   'Quentin',
 ];
 
-export const NO_COPY = { cc: false };
-export const NO_COLOR = { clr: false };
+export const NO_COPY = { cc: false, clipboard: false };
+export const NO_COLOR = { clr: false, colors: false };
 export const TEST_PREFIX = 'Here\'s the order: ';
 export const TEST_SEPARATORS = [';', 'and'];
+
+export const TEST_CONFIG = {
+  p: TEST_PREFIX,
+  prefix: TEST_PREFIX,
+  s: TEST_SEPARATORS,
+  separators: TEST_SEPARATORS,
+  oc: true,
+  oxfordComma: true,
+  cc: true,
+  clipboard: true,
+  clr: true,
+  colors: true,
+  groups: [],
+};
