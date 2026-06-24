@@ -61,6 +61,16 @@ describe('Validate save.js', () => {
     expect(output[1].toString()).to.contain('group 0');
   });
 
+  it('Does not colorize output when colors is false', function () {
+    fs.writeFileSync(configFile, JSON.stringify(TEST_CONFIG));
+
+    const output = stdout.inspectSync(() => {
+      save({ _: ['Bob', 'Alice'], prefix: 'Custom: ', separators: [',', 'and'], oxfordComma: false, colors: false, clipboard: true });
+    });
+
+    expect(output.join('')).to.equal('Group saved as group 0\n');
+  });
+
   it('Upserts an existing group with the same sorted participants instead of duplicating it', function () {
     const existing = {
       ...TEST_CONFIG,

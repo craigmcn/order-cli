@@ -79,6 +79,36 @@ describe('Validate set.js', () => {
     expect(output[0].toString()).to.contain(ANSI_COLORS.BRIGHT_GREEN);
   });
 
+  it('Returns an error when a value is omitted for a non-boolean key', function () {
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'prefix', value: [true] });
+    });
+
+    expect(output[0].toString()).to.contain('A value is required for \'prefix\'.');
+    expect(fs.existsSync(configFile)).to.be.false;
+  });
+
+  it('Returns an error when a value is omitted for an array-typed key', function () {
+    fs.writeFileSync(configFile, JSON.stringify(TEST_CONFIG));
+
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'separators', value: [true] });
+    });
+
+    expect(output[0].toString()).to.contain('A value is required for \'separators\'.');
+    expect(JSON.parse(fs.readFileSync(configFile, 'utf8'))).to.deep.equal(TEST_CONFIG);
+  });
+
+  it('Allows omitting a value for a boolean key, treating it as true', function () {
+    const output = stdout.inspectSync(() => {
+      handler({ key: 'oxfordComma', value: [true] });
+    });
+
+    const written = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    expect(written.oxfordComma).to.equal(true);
+    expect(output[1].toString()).to.contain('oxfordComma = true');
+  });
+
   describe('with -g/--group', () => {
     let config;
 

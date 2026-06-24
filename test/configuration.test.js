@@ -37,6 +37,19 @@ describe('Validate configuration.js', () => {
       });
     });
 
+    it('Returns exists: false instead of throwing when the config directory does not exist', function () {
+      const missingDir = path.join(tmpDir, 'nested', 'missing');
+      process.env.ORDER_CONFIG_DIR = missingDir;
+
+      expect(configurationFile()).to.deep.equal({
+        file: null,
+        format: null,
+        path: missingDir,
+        name: CONFIG_FILE_NAME,
+        exists: false,
+      });
+    });
+
     it('Finds a .orderrc.json file and reports format json', function () {
       const file = path.join(tmpDir, `${CONFIG_FILE_NAME}.json`);
       fs.writeFileSync(file, JSON.stringify(TEST_CONFIG));
@@ -111,6 +124,17 @@ describe('Validate configuration.js', () => {
       const file = path.join(tmpDir, `${CONFIG_FILE_NAME}.yaml`);
       expect(fs.existsSync(file)).to.be.true;
       expect(YAML.parse(fs.readFileSync(file, 'utf8'))).to.deep.equal(TEST_CONFIG);
+    });
+
+    it('Creates the config directory when it does not exist yet', function () {
+      const missingDir = path.join(tmpDir, 'nested', 'missing');
+      process.env.ORDER_CONFIG_DIR = missingDir;
+
+      writeConfiguration(TEST_CONFIG, 'json');
+
+      const file = path.join(missingDir, `${CONFIG_FILE_NAME}.json`);
+      expect(fs.existsSync(file)).to.be.true;
+      expect(JSON.parse(fs.readFileSync(file, 'utf8'))).to.deep.equal(TEST_CONFIG);
     });
 
     it('Writes to the existing file, preserving its format, when one already exists', function () {
