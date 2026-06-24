@@ -55,6 +55,33 @@ The last npm release is `speaking-order-cli@0.4.2` (Jul 2023). `main` and this b
 - A stray `os` npm dependency (a userland package, not the Node builtin) was in `package.json` — removed; `import os from 'os'` always resolves to Node's core builtin regardless, so it was dead weight.
 - `package.json`'s `bin` field has only `order`, not `order` + `speaking-order-cli` (the published 0.4.2 and a few commits on `main` register both). Confirmed with @craigmcn that adding the second alias was itself the mistake — `order` is the only intended command name, nothing to restore.
 
+## Session checkpoint (2026-06-24)
+
+**Completed:**
+- PR #8 (`init-save-config` → `main`) implements the full config/groups feature (`init`/`set`/`rm`/`show`, `--group`/`--save`) and is green on CI across all 9 matrix legs (macOS/Ubuntu/Windows × Node 18/20/22).
+- Two rounds of review fixes landed, combining GitHub Copilot's automated PR review with an independent multi-angle review each round (commits `c9f5ee1`/`31e5ae2`/`b360da4`):
+  - Crash fixes: `rm.js`/`save.js`/`show.js`/`cli.js` accessing `config.groups` without a fallback when a config file exists but has no `groups` array yet.
+  - The Windows CI failure: `configurationFile()`/`writeConfiguration()`/`init.js` built paths with `` `${dir}/${name}` `` string concatenation instead of `path.join()`, producing mixed separators on Windows.
+  - `configurationFile()` now picks `.orderrc.json`/`.orderrc.yaml` deterministically (explicit filename check) instead of an unordered directory scan that could also match `.orderrc.json.bak`-style files.
+  - `rm groups 0` against a missing `groups` array no longer misreports "Index is required" (a falsy-zero bug) — `groups` removal now has its own dedicated, explicitly-validated branch.
+  - `formatValue(null)` now renders `null` instead of a blank string.
+  - `show -g <n>` falls back to the top-level `colors` setting when a saved group doesn't have its own.
+  - `init.js` gained `--colors`/`--no-colors` support (previously had none at all); `rm.js`/`set.js` early-exit error messages now respect `--no-colors` like their success-path messages already did.
+  - README: stale "Node >= 16" corrected to ">= 18"; removed unneeded `\|` escaping in the commands table.
+- 132 tests passing, 100% line/branch/statement/function coverage maintained throughout.
+
+**Next / open:**
+- PR #8 has not been merged yet — no further known issues, ready for merge when @craigmcn decides.
+- See "Open items" below (engines LTS bump, deferred `resolveGroup()` refactor, `--help` consistency pass) — none are blocking.
+- See "Changes vs. the published npm package" below for two pre-existing decisions still needing a deliberate call before the next npm release (the separator-fallback behavior change, and the engines bump itself).
+
+**Key decisions made this session:**
+- Confirmed with @craigmcn that the missing `speaking-order-cli` bin alias is correct as-is (adding it originally was the mistake) — not something to restore.
+- Chose real temp-dir I/O over fs-mocking for all config-touching tests (see Testing section above) — sidesteps an ESM live-binding mocking gotcha that stalled an earlier draft.
+- Kept a regenerated `yarn.lock` (picked up ~150 unrelated transitive-version bumps when removing the stray `os` dependency) rather than hand-trimming it back down — it's machine-generated and was already stale against `package.json`.
+
+**Blockers:** none currently.
+
 ## Open items
 
 - `package.json`'s `engines` field should be bumped to the current Node and Yarn LTS versions (currently `node >=18.0.0` and a Yarn Classic `>=1.22.0`/`packageManager: yarn@1.22.19` pin) — revisit alongside the breaking-changes decisions above before the next release.
