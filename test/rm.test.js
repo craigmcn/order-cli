@@ -110,6 +110,16 @@ describe('Validate rm.js', () => {
     expect(readWritten()).to.deep.equal(config);
   });
 
+  it('Returns an error when -g is used but no groups are configured', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...config, groups: undefined }));
+
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'prefix', group: 0 });
+    });
+
+    expect(output[0].toString()).to.contain('Group 0 not found.');
+  });
+
   it('Removes a whole group by index, including index 0', function () {
     fs.writeFileSync(configFile, JSON.stringify(config));
 

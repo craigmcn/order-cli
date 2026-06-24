@@ -48,6 +48,19 @@ describe('Validate save.js', () => {
     expect(output[1].toString()).to.contain('group 0');
   });
 
+  it('Bootstraps a groups array when the config file has none yet', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...TEST_CONFIG, groups: undefined }));
+
+    const output = stdout.inspectSync(() => {
+      save({ _: ['Bob', 'Alice'], prefix: 'Custom: ', separators: [',', 'and'], oxfordComma: false, colors: true, clipboard: true });
+    });
+
+    const written = readWritten();
+    expect(written.groups).to.have.lengthOf(1);
+    expect(written.groups[0].participants).to.deep.equal(['Alice', 'Bob']);
+    expect(output[1].toString()).to.contain('group 0');
+  });
+
   it('Upserts an existing group with the same sorted participants instead of duplicating it', function () {
     const existing = {
       ...TEST_CONFIG,

@@ -38,12 +38,13 @@ This is a yargs-based CLI (`speaking-order-cli`, command name `order`) that shuf
 
 **Testing config-touching code**: tests for `configuration.js`/`init.js`/`set.js`/`rm.js`/`show.js`/`save.js` set `process.env.ORDER_CONFIG_DIR` to a fresh `fs.mkdtempSync` temp dir in `beforeEach` (and clean it up in `afterEach`), then call each module's exported `handler()`/`save()` directly and assert against real file contents plus `test-console`'s `stdout.inspectSync`/`stderr.inspectSync`. There's no fs-mocking library in this repo by design — real temp-dir I/O sidesteps an ESM live-binding gotcha where spying on the `configuration.js` default-export object doesn't intercept its named-export functions when they're imported and called directly elsewhere (as every consumer here does).
 
+**Cross-platform path gotcha**: always build config file paths with `path.join()`, never `` `${dir}/${name}` `` string concatenation — CI's `windows-latest` matrix legs caught this for real. `fs.mkdtempSync`/`path.join` produce backslash-separated paths on Windows, so concatenating with a literal `/` (as `configurationFile()`, `writeConfiguration()`, and `init.js` originally did) produces a mixed-separator path that doesn't match test assertions built with `path.join`, even though Windows' `fs` APIs happily accept the mixed path at the OS level. The CI matrix (`.github/workflows/tests.yml`, currently `node-version: [18.x, 20.x, 22.x]` × `[macos-latest, ubuntu-latest, windows-latest]`) is the only thing that exercises this — local macOS/Linux dev will never reproduce it.
+
 ## Changes vs. the published npm package (0.4.2)
 
 The last npm release is `speaking-order-cli@0.4.2` (Jul 2023). `main` and this branch have since accumulated changes that haven't been published yet. Worth knowing before cutting the next release:
 
 **Breaking:**
-- `package.json`'s `bin` field lost the `speaking-order-cli` alias — only `order` remains. `HEAD` (and the published 0.4.2) register both `order` and `speaking-order-cli`, so anyone invoking the long-form command (or `npx speaking-order-cli ...`) loses it. This dropped silently somewhere in this branch's uncommitted WIP and looks accidental, not intentional — confirm with @craigmcn whether to restore it before release.
 - `engines.node` bumped from `>=16.0.0` to `>=18.0.0` — breaks anyone still on Node 16/17.
 - Single custom separator behavior changed (already on `main`, predates this branch, from the `joinAnd` → `punctuatedList` rename): `order -s ";" Alice Bob Charlie` used to produce `"Bob; Charlie and Alice"` (falls back to `"and"` for the final join when only one separator is given); now produces `"Bob; Charlie; Alice"` (reuses the same separator everywhere). Came from `lib/cli.js`'s call site changing `lastSeparator: argv.s[1]` (`undefined` → triggers `punctuatedList`'s own `'and'` default) to `lastSeparator: separators[1] || separators[0]` (explicitly suppresses that default). Worth a deliberate decision (keep vs. revert) before release, since it's currently just an unannounced side effect of a refactor.
 
@@ -52,6 +53,7 @@ The last npm release is `speaking-order-cli@0.4.2` (Jul 2023). `main` and this b
 - New `init`/`set`/`rm`/`show` subcommands and `--group`/`-g`/`--save` flags on the default command are purely additive.
 - `lib/cli.js`'s internal contract changed (used to return `{message, error}` for `bin/index.js` to print; now writes to stdout/stderr directly and returns nothing) — only matters for anyone importing `lib/cli.js` directly as a library, which isn't a documented/supported use case.
 - A stray `os` npm dependency (a userland package, not the Node builtin) was in `package.json` — removed; `import os from 'os'` always resolves to Node's core builtin regardless, so it was dead weight.
+- `package.json`'s `bin` field has only `order`, not `order` + `speaking-order-cli` (the published 0.4.2 and a few commits on `main` register both). Confirmed with @craigmcn that adding the second alias was itself the mistake — `order` is the only intended command name, nothing to restore.
 
 ## Open items
 

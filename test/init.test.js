@@ -45,6 +45,17 @@ describe('Validate init.js', () => {
     expect(output[1].toString()).to.contain(file);
   });
 
+  it('Creates a JSON config file when --format is mixed-case', function () {
+    const output = stdout.inspectSync(() => {
+      handler({ format: 'JSON' });
+    });
+
+    const file = path.join(tmpDir, `${CONFIG_FILE_NAME}.json`);
+    expect(fs.existsSync(file)).to.be.true;
+    expect(JSON.parse(fs.readFileSync(file, 'utf8'))).to.deep.equal(DEFAULT_CONFIG);
+    expect(output[1].toString()).to.contain(file);
+  });
+
   it('Returns an error for an invalid format', function () {
     const output = stderr.inspectSync(() => {
       handler({ format: 'bogus' });
