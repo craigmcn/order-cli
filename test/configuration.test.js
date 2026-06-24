@@ -75,6 +75,25 @@ describe('Validate configuration.js', () => {
         exists: true,
       });
     });
+
+    it('Deterministically prefers .orderrc.json over .orderrc.yaml when both exist', function () {
+      fs.writeFileSync(path.join(tmpDir, `${CONFIG_FILE_NAME}.yaml`), YAML.stringify(TEST_CONFIG));
+      fs.writeFileSync(path.join(tmpDir, `${CONFIG_FILE_NAME}.json`), JSON.stringify(TEST_CONFIG));
+
+      expect(configurationFile().name).to.equal(`${CONFIG_FILE_NAME}.json`);
+    });
+
+    it('Ignores unrelated files such as a .bak backup', function () {
+      fs.writeFileSync(path.join(tmpDir, `${CONFIG_FILE_NAME}.json.bak`), JSON.stringify(TEST_CONFIG));
+
+      expect(configurationFile()).to.deep.equal({
+        file: null,
+        format: null,
+        path: tmpDir,
+        name: CONFIG_FILE_NAME,
+        exists: false,
+      });
+    });
   });
 
   describe('parseConfiguration()', () => {

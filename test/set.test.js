@@ -88,6 +88,14 @@ describe('Validate set.js', () => {
     expect(fs.existsSync(configFile)).to.be.false;
   });
 
+  it('Does not colorize the "value is required" error when --no-colors is passed', function () {
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'prefix', value: [true], colors: false });
+    });
+
+    expect(output[0].toString()).to.equal('A value is required for \'prefix\'.\n');
+  });
+
   it('Returns an error when a value is omitted for an array-typed key', function () {
     fs.writeFileSync(configFile, JSON.stringify(TEST_CONFIG));
 
@@ -133,6 +141,15 @@ describe('Validate set.js', () => {
         handler({ key: 'prefix', value: ['New: '], group: 5 });
       });
       expect(output[0].toString()).to.contain('Group 5 not found.');
+    });
+
+    it('Does not colorize the "group not found" error when colors is false', function () {
+      fs.writeFileSync(configFile, JSON.stringify({ ...config, colors: false }));
+
+      const output = stderr.inspectSync(() => {
+        handler({ key: 'prefix', value: ['New: '], group: 5 });
+      });
+      expect(output[0].toString()).to.equal('Group 5 not found.\n');
     });
 
     it('Returns an error when -g is used but no groups are configured', function () {

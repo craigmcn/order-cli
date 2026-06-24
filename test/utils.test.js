@@ -98,5 +98,11 @@ describe('Validate utils.js', () => {
         `  key2: ${ANSI_COLORS.BRIGHT_GREEN}'value2'${ANSI_COLORS.DEFAULT}\n` +
         '}\n');
     });
+    it('Returns a visible "null" instead of a blank string when null is provided', function () {
+      expect(formatValue(null, false)).to.equal('null');
+    });
+    it('Returns a formatted string, with colour, when null is provided', function () {
+      expect(formatValue(null, true)).to.equal(`${ANSI_COLORS.BRIGHT_YELLOW}null${ANSI_COLORS.DEFAULT}`);
+    });
   });
 });

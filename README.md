@@ -10,7 +10,7 @@ Provided a list of names, the list will be shuffled in a random order and copied
 Requirements
 ------------
 
-Node >= 16
+Node >= 18
 
 Usage
 -----
@@ -30,10 +30,10 @@ Commands
 
 | Command | Description |
 |---|---|
-| `order init [-f\|--format=json\|yaml]` | Create a config file (`~/.orderrc.json` or `~/.orderrc.yaml`) with the default options |
+| `order init [-f|--format=json|yaml]` | Create a config file (`~/.orderrc.json` or `~/.orderrc.yaml`) with the default options |
 | `order set <key> [value..]` | Set a configuration value (creates the config file if it doesn't exist yet) |
-| `order rm [-g\|--group=index] <key> [index]` | Remove a configuration value, an item from an array value, or a whole group (`order rm groups <index>`) |
-| `order show [-g\|--group=index]` | Display the current configuration, or a single saved group |
+| `order rm [-g|--group=index] <key> [index]` | Remove a configuration value, an item from an array value, or a whole group (`order rm groups <index>`) |
+| `order show [-g|--group=index]` | Display the current configuration, or a single saved group |
 | `order [options] [--] <participants...> --save` | Save the participants and options for the current run as a new group |
 | `order [options] -g, --group=index` | Run using a previously saved group's participants and options |
 

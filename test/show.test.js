@@ -82,4 +82,18 @@ describe('Validate show.js', () => {
 
     expect(output[0].toString()).to.contain('Group 0 not found.');
   });
+
+  it('Falls back to the top-level colors setting when a group has none of its own', function () {
+    fs.writeFileSync(configFile, JSON.stringify({
+      ...config,
+      colors: false,
+      groups: [{ participants: ['Alice', 'Bob'] }],
+    }));
+
+    const output = stdout.inspectSync(() => {
+      handler({ group: 0 });
+    });
+
+    expect(output.join('')).to.not.contain(ANSI_COLORS.BRIGHT_BLUE);
+  });
 });

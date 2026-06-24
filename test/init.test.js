@@ -86,4 +86,20 @@ describe('Validate init.js', () => {
 
     expect(output[0].toString()).to.contain(ANSI_COLORS.BRIGHT_CYAN);
   });
+
+  it('Does not colorize output when colors is false', function () {
+    const output = stdout.inspectSync(() => {
+      handler({ format: 'json', colors: false });
+    });
+
+    expect(output.join('')).to.not.contain(ANSI_COLORS.BRIGHT_CYAN);
+  });
+
+  it('Does not colorize the invalid-format error when colors is false', function () {
+    const output = stderr.inspectSync(() => {
+      handler({ format: 'bogus', colors: false });
+    });
+
+    expect(output.join('')).to.not.contain(ANSI_COLORS.BRIGHT_RED);
+  });
 });

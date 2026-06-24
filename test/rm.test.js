@@ -42,6 +42,22 @@ describe('Validate rm.js', () => {
     expect(output[0].toString()).to.contain('No configuration file found.');
   });
 
+  it('Does not colorize the "no configuration file" error when --no-colors is passed', function () {
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'prefix', colors: false });
+    });
+    expect(output[0].toString()).to.equal('No configuration file found.\n');
+  });
+
+  it('Does not colorize the "group not found" error when colors is false', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...config, colors: false }));
+
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'prefix', group: 99 });
+    });
+    expect(output[0].toString()).to.equal('Group 99 not found.\n');
+  });
+
   it('Removes a scalar top-level key', function () {
     fs.writeFileSync(configFile, JSON.stringify(config));
 
@@ -131,6 +147,17 @@ describe('Validate rm.js', () => {
     expect(output[1].toString()).to.contain('Removed groups[0]');
   });
 
+  it('Returns an error when removing a group at an out-of-range index', function () {
+    fs.writeFileSync(configFile, JSON.stringify(config));
+
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'groups', index: 99 });
+    });
+
+    expect(output[0].toString()).to.contain('Index 99 does not exist.');
+    expect(readWritten()).to.deep.equal(config);
+  });
+
   it('Returns an error when removing a group without an index', function () {
     fs.writeFileSync(configFile, JSON.stringify(config));
 
@@ -140,5 +167,26 @@ describe('Validate rm.js', () => {
 
     expect(output[0].toString()).to.contain('Index is required to remove a group.');
     expect(readWritten()).to.deep.equal(config);
+  });
+
+  it('Removes group index 0 without misreporting it as a missing index', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...config, groups: [config.groups[0]] }));
+
+    const output = stdout.inspectSync(() => {
+      handler({ key: 'groups', index: 0 });
+    });
+
+    expect(readWritten().groups).to.deep.equal([]);
+    expect(output[1].toString()).to.contain('Removed groups[0]');
+  });
+
+  it('Returns a friendly error removing groups index 0 when no groups array exists', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...config, groups: undefined }));
+
+    const output = stderr.inspectSync(() => {
+      handler({ key: 'groups', index: 0 });
+    });
+
+    expect(output[0].toString()).to.contain('No groups configured.');
   });
 });
