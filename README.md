@@ -10,7 +10,7 @@ Provided a list of names, the list will be shuffled in a random order and copied
 Requirements
 ------------
 
-Node >= 16
+Node >= 18
 
 Usage
 -----
@@ -24,6 +24,23 @@ Usage
 > npm install -g speaking-order-cli
 > order [options] [--] <participants...>
 ```
+
+Commands
+--------
+
+| Command | Description |
+|---|---|
+| `order init [-f|--format=json|yaml]` | Create a config file (`~/.orderrc.json` or `~/.orderrc.yaml`) with the default options |
+| `order set <key> [value..]` | Set a configuration value (creates the config file if it doesn't exist yet) |
+| `order rm [-g|--group=index] <key> [index]` | Remove a configuration value, an item from an array value, or a whole group (`order rm groups <index>`) |
+| `order show [-g|--group=index]` | Display the current configuration, or a single saved group |
+| `order [options] [--] <participants...> --save` | Save the participants and options for the current run as a new group |
+| `order [options] -g, --group=index` | Run using a previously saved group's participants and options |
+
+The config file stores default options plus any saved "groups" (a saved list of participants
+along with the options used to order them). The directory the CLI looks in for the config file
+defaults to the user's home directory, and can be overridden with the `ORDER_CONFIG_DIR`
+environment variable (mainly useful for testing or running multiple isolated configurations).
 
 Options
 -------
@@ -52,14 +69,3 @@ Here's the order: Charlie, Bob then Alice
 > npx order -s ";" "and" --oc -- Alice Bob Charlie
 Speaking order: Alice; Charlie; and Bob
 ```
-
-Limitations
------------
-
-There's a self-imposed maximum of 16 participants.
-
-Future
-------
-
-For this MVP, I was hoping to implement the ability to read from a local file. The self-imposed maximum of 16
-participants was to limit the amount of data that would be output from a file.

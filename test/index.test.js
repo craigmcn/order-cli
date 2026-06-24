@@ -1,19 +1,34 @@
 import { readFileSync } from 'fs';
-import { describe, it } from 'mocha';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import { expect } from 'chai';
 import { stderr } from 'test-console';
 import { execSync } from 'child_process';
-import { DEFAULT_ARGV, PARTICIPANTS, TEST_PREFIX, TEST_SEPARATORS } from './constants.js';
+import { PARTICIPANTS, TEST_PREFIX, TEST_SEPARATORS } from './constants.js';
 import { ANSI_COLORS } from '../lib/colors.js';
-import { COPIED, DEBUGGING_INFO, NO_PARTICIPANTS_MSG, PREFIX } from '../lib/constants.js';
+import { COPIED, DEBUGGING_INFO, DEFAULT_ARGV, NO_PARTICIPANTS_MSG, PREFIX } from '../lib/constants.js';
 import { shuffle } from '../lib/shuffle.js';
 
 const loadJSON = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url)));
 const { version } = loadJSON('../package.json');
 
-const test = (args) => execSync(`node bin/index.js${args ? ' ' + args : ''}`).toString();
-
 describe('CLI', () => {
+  let tmpDir;
+  let test;
+
+  beforeEach(function () {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'order-cli-'));
+    test = (args) => execSync(`node bin/index.js --env=test${args ? ' ' + args : ''}`, {
+      env: { ...process.env, ORDER_CONFIG_DIR: tmpDir },
+    }).toString();
+  });
+
+  afterEach(function () {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
   it('should output help information', () => {
     expect(test('--help').toString()).to.contain('Usage:  index.js [options] [--] <participants...>');
   });
@@ -21,7 +36,7 @@ describe('CLI', () => {
   it('should output version information', () => {
     expect(test('--version')).to.contain(version);
   });
-  
+
   it('should return an error, when no arguments provided', () => {
     const output = stderr.inspectSync(() => {
       test();

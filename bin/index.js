@@ -1,9 +1,25 @@
 #! /usr/bin/env node
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-import { cli } from '../lib/cli.js';
+import init from '../lib/init.js';
+import cli from '../lib/cli.js';
 import { green, white } from '../lib/colors.js';
 import { PREFIX } from '../lib/constants.js';
+import set from '../lib/set.js';
+import rm from '../lib/rm.js';
+import show from '../lib/show.js';
+import Configuration from '../lib/configuration.js';
+// import { TEST_CONFIG } from '../test/constants.js';
+
+/*
+order
+  init [format=json|yaml] -- creates a config file, if one does not exist
+  set <key> [value..] -- sets a key-value pair (defaults) in the config file
+  rm <key> [groupIndex] -- removes a key-value pair from the config file
+    - if key is 'group', groupIndex is required
+  show -- displays the config file (formatted)
+  [options] [--] <participants...>
+*/
 
 const y = yargs();
 y.usage('Usage:  $0 [options] [--] <participants...>');
@@ -16,44 +32,16 @@ y.usage(`> ${white('Here\'s the order: Charlie, Bob then Alice')}`);
 y.usage(`$0 -s ";" "and" --oc -- ${green('Alice Bob Charlie')}`);
 y.usage(`> ${white(`${PREFIX}Alice; Charlie; and Bob`)}`);
 
+y.command('$0', 'Create a random meeting order', cli);
+y.command(init);
+y.command(set);
+y.command(rm);
+y.command(show);
+
 y.alias('h', 'help');
 y.alias('v', 'version');
-y.option('debug', {
-  describe: 'Output debug information',
-  type: 'boolean',
-});
 
-y.option('p', {
-  alias: 'prefix',
-  describe: 'Output prefix',
-  default: PREFIX,
-  type: 'string',
-});
-y.option('s', {
-  alias: 'separators',
-  describe: 'Output list separators (i.e., [separator, lastSeparator])',
-  default: [',', 'then'],
-  type: 'array',
-});
-y.option('oc', {
-  alias: 'oxford-comma',
-  describe: 'Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the separator to the second-to-last item)',
-  type: 'boolean',
-});
-y.option('cc', {
-  alias: 'clipboard',
-  describe: 'Copy the output to the clipboard (to disable: --no-cc, --no-clipboard))',
-  default: true,
-  type: 'boolean',
-});
-y.option('clr', {
-  alias: 'colors',
-  describe: 'Colorize the output (to disable: --no-clr, --no-colors)',
-  default: true,
-  type: 'boolean',
-});
+const { config } = Configuration.readConfiguration();
+y.config(config);
 
-const argv = y.parse(hideBin(process.argv));
-const {message, error} = cli(argv);
-message && process.stdout.write(message + '\n');
-error && process.stderr.write(error + '\n');
+y.parse(hideBin(process.argv));
