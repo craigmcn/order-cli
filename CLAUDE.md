@@ -40,9 +40,21 @@ This is a yargs-based CLI (`speaking-order-cli`, command name `order`) that shuf
 
 **Cross-platform path gotcha**: always build config file paths with `path.join()`, never `` `${dir}/${name}` `` string concatenation — CI's `windows-latest` matrix legs caught this for real. `fs.mkdtempSync`/`path.join` produce backslash-separated paths on Windows, so concatenating with a literal `/` (as `configurationFile()`, `writeConfiguration()`, and `init.js` originally did) produces a mixed-separator path that doesn't match test assertions built with `path.join`, even though Windows' `fs` APIs happily accept the mixed path at the OS level. The CI matrix (`.github/workflows/tests.yml`, currently `node-version: [22.x, 24.x, 26.x]` × `[macos-latest, ubuntu-latest, windows-latest]`) is the only thing that exercises this — local macOS/Linux dev will never reproduce it.
 
+## Release process
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); `[Unreleased]` accumulates entries as PRs land on `main`. The changelog edit happens **as part of the release commit** — not before, not as a follow-up cleanup PR:
+
+1. Bump `version` in `package.json` (0.x semver here: breaking changes bump minor, not major).
+2. In `CHANGELOG.md`, rename `## [Unreleased]` → `## [x.y.z] - <release date>`, then add a fresh empty `## [Unreleased]` above it.
+3. Update the link references at the bottom of the file: point `[Unreleased]` at `compare/vx.y.z...HEAD`, and add a new `[x.y.z]: compare/v<prev>...vx.y.z` line.
+4. Commit all three together (version bump + changelog rename + link refs) — this is what "cuts" the release.
+5. `npm publish`, then tag `vx.y.z` on that commit and push the tag.
+
+If a PR's version bump won't be published immediately (e.g. it lands on `main` but publishing happens later), it's still fine to do steps 1–3 in that PR — just make sure nothing else merges to `[Unreleased]` in the gap, or the dated entry becomes inaccurate.
+
 ## Changes vs. the published npm package
 
-See [CHANGELOG.md](CHANGELOG.md) for the full breakdown of what's shipped in each release and what's accumulated under `[Unreleased]` since `0.5.0` (published 2026-06-24).
+See [CHANGELOG.md](CHANGELOG.md) for the full breakdown of what's shipped in each release, including `0.6.0` (this PR).
 
 **Decided:** the single-custom-separator behavior that shipped in `0.5.0` (`order -s ";" Alice Bob Charlie` → `"Bob; Charlie; Alice"`, reusing the one given separator everywhere) is the intended, permanent behavior — confirmed by @craigmcn. A single separator is the only separator; there's deliberately no fallback to `"and"` (or any second separator) when only one is given. Nothing to revert. README's `-s/--separators` row and examples spell this out.
 

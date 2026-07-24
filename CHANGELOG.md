@@ -12,19 +12,17 @@ and their commit history for that history.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-24
+
 ### Changed
-- `engines.node` bumped from `>=18.0.0` to `>=22.0.0` — drops Node 18 (EOL Apr 2025) and Node 20 (EOL Apr 2026). **Breaking** for anyone still on Node 18/20/21.
+- **Breaking:** `engines.node` bumped from `>=18.0.0` to `>=22.0.0` — drops Node 18 (EOL Apr 2025) and Node 20 (EOL Apr 2026).
 - Local dev Node version pin renamed `.nvmrc` → `.node-version`, now pinning `24.18.0` (current Active LTS).
 - CI matrix now tests `22.x`/`24.x`/`26.x` (Maintenance LTS / Active LTS / newest Current) instead of `18.x`/`20.x`/`22.x`.
 - `packageManager` pin bumped `yarn@1.22.19` → `yarn@1.22.22`.
 - Dev dependency bumps: `c8` 8.0.1 → 12.0.0, plus in-range patch/minor bumps for `chai`, `eslint`, `mocha`, `yaml`, `yargs`.
 - `actions/checkout` and `actions/setup-node` bumped `v3` → `v4` in CI.
-
-### Internal
+- Confirmed (no behavior change): the single-custom-separator behavior introduced in `0.5.0` — when only one separator is given, it's the only separator used, with no fallback to `"and"` — is the intended, permanent behavior, not an unannounced side effect. This closes out the decision `0.5.0` left open.
 - Added a shared `resolveGroup(config, index)` helper in `lib/configuration.js`; `cli.js`/`set.js`/`rm.js`/`show.js` now use it instead of each reimplementing `(config.groups || [])[...]`.
-
-### Decided
-- The single-custom-separator behavior introduced in `0.5.0` (see below) is confirmed as intended, not an unannounced side effect: when only one separator is given, it's the only separator used, full stop. A second, different separator is never implied or required — there is deliberately no fallback to `"and"` (or anything else) for the final join. This does not change `0.5.0`'s already-shipped behavior; it closes out the open decision that behavior left behind.
 
 ## [0.5.0] - 2026-06-24
 
@@ -53,5 +51,6 @@ and their commit history for that history.
 - `show -g <n>` now falls back to the top-level `colors` setting when a saved group doesn't have its own.
 - `init` gained `--colors`/`--no-colors` support; `rm`/`set` error messages now respect `--no-colors` consistently with their success-path messages.
 
-[Unreleased]: https://github.com/craigmcn/order-cli/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/craigmcn/order-cli/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/craigmcn/order-cli/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/craigmcn/order-cli/compare/v0.4.2...v0.5.0
