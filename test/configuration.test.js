@@ -8,10 +8,11 @@ import {
   configurationFile,
   parseConfiguration,
   readConfiguration,
+  resolveGroup,
   writeConfiguration,
 } from '../lib/configuration.js';
 import { CONFIG_FILE_NAME } from '../lib/constants.js';
-import { TEST_CONFIG } from './constants.js';
+import { PARTICIPANTS, TEST_CONFIG } from './constants.js';
 
 describe('Validate configuration.js', () => {
   let tmpDir;
@@ -121,6 +122,22 @@ describe('Validate configuration.js', () => {
       fs.writeFileSync(path.join(tmpDir, `${CONFIG_FILE_NAME}.yaml`), YAML.stringify(TEST_CONFIG));
 
       expect(readConfiguration()).to.deep.equal({ config: TEST_CONFIG, format: 'yaml' });
+    });
+  });
+
+  describe('resolveGroup()', () => {
+    const configWithGroups = { ...TEST_CONFIG, groups: [{ participants: PARTICIPANTS }] };
+
+    it('Returns the group at the given index', function () {
+      expect(resolveGroup(configWithGroups, 0)).to.deep.equal(configWithGroups.groups[0]);
+    });
+
+    it('Returns undefined when the index is out of range', function () {
+      expect(resolveGroup(configWithGroups, 99)).to.be.undefined;
+    });
+
+    it('Returns undefined when the config has no groups array', function () {
+      expect(resolveGroup({}, 0)).to.be.undefined;
     });
   });
 
