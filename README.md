@@ -10,7 +10,7 @@ Provided a list of names, the list will be shuffled in a random order and copied
 Requirements
 ------------
 
-Node >= 18
+Node >= 22
 
 Usage
 -----
@@ -49,7 +49,7 @@ Options
 |---|---|---|
 |`--debug`             | Output debug information    | [`boolean`] |
 |`-p, --prefix `       | Output prefix               | [`string`] [_default:_ "Speaking order: "] |
-|`-s, --separators`    | Output list separators (i.e., [separator, lastSeparator]) | [`array`] [_default:_ [",", "then"]] |
+|`-s, --separators`    | Output list separators (i.e., [separator, lastSeparator]); if only one value is given, it's used for every join — there's no default fallback to a second separator | [`array`] [_default:_ [",", "then"]] |
 |`--oc, --oxford-comma`| Use the Oxford comma (e.g., "Alice, Bob, and Charlie"; applies the separator to the second-to-last item) | [`boolean`] |
 | `--cc, --clipboard`  | Copy the output to the clipboard (to disable: `--no-cc`, `--no-clipboard`) | [`boolean`] [_default_: true] |
 | `--clr, --colors`    | Colorize the output (to disable: `--no-clr`, `--no-colors`) | [`boolean`] [_default_: true] |
@@ -68,4 +68,7 @@ Here's the order: Charlie, Bob then Alice
 
 > npx order -s ";" "and" --oc -- Alice Bob Charlie
 Speaking order: Alice; Charlie; and Bob
+
+> npx order -s ";" -- Alice Bob Charlie
+Speaking order: Bob; Charlie; Alice
 ```
