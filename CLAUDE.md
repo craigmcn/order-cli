@@ -49,6 +49,7 @@ This is a yargs-based CLI (`speaking-order-cli`, command name `order`) that shuf
 3. Update the link references at the bottom of the file: point `[Unreleased]` at `compare/vx.y.z...HEAD`, and add a new `[x.y.z]: compare/v<prev>...vx.y.z` line.
 4. Commit all three together (version bump + changelog rename + link refs) — this is what "cuts" the release.
 5. `npm publish`, then tag `vx.y.z` on that commit and push the tag.
+6. When creating the GitHub release for that tag, don't use GitHub's "Generate release notes" output as-is — it's just a list of PR titles. Instead, paste in the matching `## [x.y.z]` section's body from `CHANGELOG.md` (the `### Added`/`### Changed`/etc. bullets, not the version heading itself) as the main content, and keep GitHub's auto-generated `## What's Changed` PR-link line and `**Full Changelog**` compare link appended underneath it for traceability. Leave out anything not actually shipping in this version (e.g. follow-up issues filed during review but not fixed in this release).
 
 If a PR's version bump won't be published immediately (e.g. it lands on `main` but publishing happens later), it's still fine to do steps 1–3 in that PR — just make sure nothing else merges to `[Unreleased]` in the gap, or the dated entry becomes inaccurate.
 
