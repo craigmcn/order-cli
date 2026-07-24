@@ -15,7 +15,7 @@ and their commit history for that history.
 ## [0.6.0] - 2026-07-24
 
 ### Changed
-- **Breaking:** `engines.node` bumped from `>=18.0.0` to `>=22.0.0` — drops Node 18 (EOL Apr 2025) and Node 20 (EOL Apr 2026).
+- **Breaking:** `engines.node` bumped from `>=18.0.0` to `>=22.12.0` — drops Node 18 (EOL Apr 2025) and Node 20 (EOL Apr 2026); the floor is `22.12.0` rather than a round `22.0.0` to match what the `c8` 12.x devDependency actually requires.
 - Local dev Node version pin renamed `.nvmrc` → `.node-version`, now pinning `24.18.0` (current Active LTS).
 - CI matrix now tests `22.x`/`24.x`/`26.x` (Maintenance LTS / Active LTS / newest Current) instead of `18.x`/`20.x`/`22.x`.
 - `packageManager` pin bumped `yarn@1.22.19` → `yarn@1.22.22`.

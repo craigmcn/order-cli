@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn lint` / `yarn lint:fix` — ESLint (`eslint:recommended`, 2-space indent, single quotes, semicolons, trailing commas)
 - `node bin/index.js [options] [--] <participants...>` — run the CLI locally without installing/linking it
 
-Node `>=22` is required (`.node-version` pins `24.18.0`, the current Active LTS). This is a `"type": "module"` package — all files use ESM `import`/`export`.
+Node `>=22.12.0` is required (`.node-version` pins `24.18.0`, the current Active LTS; the floor is `22.12.0` rather than a round `22.0.0` because that's what the `c8` 12.x devDependency actually needs). This is a `"type": "module"` package — all files use ESM `import`/`export`.
 
 ## Architecture
 
@@ -87,16 +87,22 @@ See [CHANGELOG.md](CHANGELOG.md) for the full breakdown of what's shipped in eac
 ## Session checkpoint (2026-07-24)
 
 **Completed** (branch `chore/node-upgrade-and-refactor`, prompted by a personal TODO to "review and upgrade order-cli"; PR #8 is confirmed merged and `0.5.0` confirmed published to npm on 2026-06-24, so this picks up from there):
-- Node/tooling upgrade: `.nvmrc` renamed to `.node-version`, pinned to `24.18.0` (current Active LTS, replacing the old `v20.2.0` pin); `engines.node` bumped `>=18.0.0` → `>=22.0.0` (drops Node 18 and 20, both EOL by now); CI matrix bumped `[18.x, 20.x, 22.x]` → `[22.x, 24.x, 26.x]` so it always covers one major below and one above the pinned target (Maintenance LTS / Active LTS / newest Current); `actions/checkout` and `actions/setup-node` bumped `v3` → `v4`; README's "Node >= 18" corrected to ">= 22".
+- Node/tooling upgrade: `.nvmrc` renamed to `.node-version`, pinned to `24.18.0` (current Active LTS, replacing the old `v20.2.0` pin); `engines.node` bumped `>=18.0.0` → `>=22.12.0` (drops Node 18 and 20, both EOL by now; `22.12.0` rather than a round `22.0.0` because that's what the `c8` 12.x devDependency actually requires — caught in Copilot's PR review, see below); CI matrix bumped `[18.x, 20.x, 22.x]` → `[22.x, 24.x, 26.x]` so it always covers one major below and one above the pinned target (Maintenance LTS / Active LTS / newest Current); `actions/checkout` and `actions/setup-node` bumped `v3` → `v4`; README's "Node >= 18" corrected to ">= 22.12".
 - Implemented the previously-deferred `resolveGroup(config, index)` shared helper in `lib/configuration.js` and switched `lib/cli.js`, `lib/set.js`, `lib/rm.js`, `lib/show.js` to call it instead of each reimplementing `(config.groups || [])[...]`. Added direct unit tests for it in `test/configuration.test.js`.
 - Dependency bumps: `c8` 8.0.1 → 12.0.0 (major — required, the old 8.x line throws under Node 26 because of a broken CJS/ESM interop in its bundled `yargs`), plus in-range bumps for `chai`, `eslint`, `mocha`, `yaml`, `yargs`; `packageManager` pin `yarn@1.22.19` → `yarn@1.22.22`. See [CHANGELOG.md](CHANGELOG.md) for the full breakdown.
-- Version bumped `0.5.0` → `0.6.0` (0.x semver convention: a breaking change bumps minor, not major — the `engines.node` floor moving to `>=22.0.0` is the breaking part).
+- Version bumped `0.5.0` → `0.6.0` (0.x semver convention: a breaking change bumps minor, not major — the `engines.node` floor moving to `>=22.12.0` is the breaking part).
 - 135 tests passing (135 vs. the prior 132 — added 3 for `resolveGroup()`), 100% line/branch/statement/function coverage maintained, lint clean.
 - Added [CHANGELOG.md](CHANGELOG.md) (Keep a Changelog format), backfilled with a `0.5.0` entry; the old "Changes vs. the published npm package" comparison prose in this file was trimmed down to point at it instead of duplicating it.
 - **Resolved** the separator-fallback decision carried over from `0.5.0`: confirmed with @craigmcn that a single given separator is the only separator, permanently — no fallback to `"and"` or any second separator. README's `-s/--separators` row and examples updated to spell this out; CHANGELOG.md's `[Unreleased]` section records the decision.
 
 **Deliberately not done this session** (scope was Node/tooling upgrade + the already-documented refactor + the changelog, not a full dependency-major sweep):
 - Major version bumps for `chai` (4→6), `eslint` (8→10), `mocha` (10→11), `sinon` (15→22), `clipboardy` (3→5), `yargs` (17→18) were left in place. `eslint` in particular needs a flat-config migration (this repo still uses legacy `.eslintrc.json`) before 9/10 can land — that's a dedicated piece of work, not a drive-by bump.
+
+**Copilot review triage** (PR #9): GitHub Copilot's automated review caught 2 real, pre-existing bugs unrelated to this PR's own changes, plus correctly flagged (before it was fixed) that the changelog hadn't yet been finalized to `0.6.0`. All 4 threads reacted to, replied to, and resolved. The 2 pre-existing bugs were filed as standalone issues rather than folded into this PR:
+- [#10](https://github.com/craigmcn/order-cli/issues/10) — `show.js`'s "Group N not found" error ignores `--no-colors` (missing 3rd arg to `color()`).
+- [#11](https://github.com/craigmcn/order-cli/issues/11) — `resolveGroup()` throws if a config file parses to `null`; not a regression (the pre-extraction inline code had the same failure mode), but now centralized in one place so it's a one-line fix.
+
+One review finding *was* folded into this PR: `engines.node` was tightened from `>=22.0.0` to `>=22.12.0` to match what `c8` 12.x actually requires — see the checkpoint entry above.
 
 **Blockers:** none currently.
 
@@ -105,3 +111,4 @@ See [CHANGELOG.md](CHANGELOG.md) for the full breakdown of what's shipped in eac
 - **Dependency major-version sweep**: `chai`, `eslint`, `mocha`, `sinon`, `clipboardy`, `yargs` all have major releases available beyond what this session bumped (see the 2026-07-24 checkpoint above for current vs. latest). `eslint` 9/10 requires migrating `.eslintrc.json` to flat config first — do that as its own piece of work rather than bundling it with an unrelated change.
 - **Future**: review `--help` output (top-level and per-subcommand) for consistency now that `init`/`set`/`rm`/`show` exist alongside the default command — e.g. whether `-g/--group` is described the same way everywhere it appears, whether `order --help` and `order set --help` read coherently as a set.
 - Whether to revisit the `yarn` `engines` floor beyond the Classic patch bump made this session (e.g. a Yarn 4 migration) is an open question, not a decision — no strong signal either way yet.
+- [#10](https://github.com/craigmcn/order-cli/issues/10) and [#11](https://github.com/craigmcn/order-cli/issues/11) — pre-existing bugs surfaced by Copilot's review of PR #9, not yet fixed.

@@ -10,7 +10,7 @@ Provided a list of names, the list will be shuffled in a random order and copied
 Requirements
 ------------
 
-Node >= 22
+Node >= 22.12
 
 Usage
 -----
