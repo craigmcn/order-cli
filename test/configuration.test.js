@@ -139,6 +139,10 @@ describe('Validate configuration.js', () => {
     it('Returns undefined when the config has no groups array', function () {
       expect(resolveGroup({}, 0)).to.be.undefined;
     });
+
+    it('Returns undefined when config is null', function () {
+      expect(resolveGroup(null, 0)).to.be.undefined;
+    });
   });
 
   describe('writeConfiguration()', () => {
