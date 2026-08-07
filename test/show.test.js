@@ -73,6 +73,16 @@ describe('Validate show.js', () => {
     expect(output[0].toString()).to.contain('Group 99 not found.');
   });
 
+  it('Does not colorize the "group not found" error when colors is false', function () {
+    fs.writeFileSync(configFile, JSON.stringify({ ...config, colors: false }));
+
+    const output = stderr.inspectSync(() => {
+      handler({ group: 99 });
+    });
+
+    expect(output[0].toString()).to.equal('Group 99 not found.\n');
+  });
+
   it('Returns an error when -g is requested but no groups are configured', function () {
     fs.writeFileSync(configFile, JSON.stringify({ ...config, groups: undefined }));
 
