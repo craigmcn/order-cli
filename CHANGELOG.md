@@ -12,6 +12,12 @@ and their commit history for that history.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-07
+
+### Fixed
+- `resolveGroup()` no longer throws a `TypeError` when a config file's contents parse to `null` (e.g. an empty/degenerate `.orderrc.json`) — it now resolves to no group instead.
+- `show.js`'s "Group N not found" error now respects `--no-colors`/`--no-clr`, matching every other message in the file.
+
 ## [0.6.0] - 2026-07-24
 
 ### Changed
@@ -51,6 +57,7 @@ and their commit history for that history.
 - `show -g <n>` now falls back to the top-level `colors` setting when a saved group doesn't have its own.
 - `init` gained `--colors`/`--no-colors` support; `rm`/`set` error messages now respect `--no-colors` consistently with their success-path messages.
 
-[Unreleased]: https://github.com/craigmcn/order-cli/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/craigmcn/order-cli/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/craigmcn/order-cli/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/craigmcn/order-cli/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/craigmcn/order-cli/compare/v0.4.2...v0.5.0
